@@ -79,3 +79,15 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 
+
+dist/jquery\.contextMenu\.css
+
+dist/jquery\.contextMenu\.js
+
+dist/jquery\.contextMenu\.min\.css
+
+dist/jquery\.contextMenu\.min\.css\.map
+
+dist/jquery\.contextMenu\.min\.js
+
+dist/jquery\.contextMenu\.min\.js\.map

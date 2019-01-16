@@ -352,7 +352,7 @@
             click: function (e) {
                 e.preventDefault();
                 e.stopImmediatePropagation();
-                $(this).trigger($.Event('contextmenu', {data: e.data, pageX: e.pageX, pageY: e.pageY}));
+                $(this).trigger($.Event('contextmenu', {data: e.data, pageX: e.pageX, pageY: e.pageY, mouseButton: e.button}));
             },
             // contextMenu right-click trigger
             mousedown: function (e) {
