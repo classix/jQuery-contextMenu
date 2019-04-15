@@ -737,6 +737,16 @@
                     handle.itemMouseleave.call(opt.$selected.get(0), e);
                 }
 
+                // scroll to item if needed (using keyboard navigation)
+                // hint: you can reach the next item not only with down arrow, but also with the up arrow at the last item
+                // and the same holds for previous item - so we need to take regard to both conditions.
+                var offsetParent = $prev.offsetParent();
+                var parentTop = offsetParent.offset().top;
+                var childTop = $prev.offset().top;
+                if (offsetParent && ((childTop >= parentTop + offsetParent.height()) || (childTop < parentTop))) {
+                    $prev[0].scrollIntoView(true);
+                }
+
                 // activate next
                 handle.itemMouseenter.call($prev.get(0), e);
 
@@ -779,6 +789,16 @@
                 // leave current
                 if (opt.$selected) {
                     handle.itemMouseleave.call(opt.$selected.get(0), e);
+                }
+
+                // scroll to item if needed (using keyboard navigation)
+                // hint: you can reach the next item not only with down arrow, but also with the up arrow at the last item
+                // and the same holds for previous item - so we need to take regard to both conditions.
+                var offsetParent = $next.offsetParent();
+                var parentTop = offsetParent.offset().top;
+                var childTop = $next.offset().top;
+                if (offsetParent && ((childTop >= parentTop + offsetParent.height()) || (childTop < parentTop))) {
+                    $next[0].scrollIntoView(false);
                 }
 
                 // activate next
@@ -1621,23 +1641,27 @@
             },
             // operation that will run after contextMenu showed on screen
             activated: function(opt){
-                var $menu = opt.$menu;
-                var $menuOffset = $menu.offset();
-                var winHeight = $(window).height();
-                var winScrollTop = $(window).scrollTop();
-                var menuHeight = $menu.height();
-                if(menuHeight > winHeight){
-                    $menu.css({
-                        'height' : winHeight + 'px',
-                        'overflow-x': 'hidden',
-                        'overflow-y': 'auto',
+                var menus = opt.$menu.find('.context-menu-list').addBack();
+                menus.each(function (index, menuElm) {
+                    var $menu = $(menuElm);
+                    var $menuOffset = $menu.offset();
+                    var winHeight = $(window).height();
+                    var winScrollTop = $(window).scrollTop();
+                    var menuHeight = $menu.height();
+                    if(menuHeight > winHeight){
+                        $menu.css({
+                            'height' : winHeight + 'px',
+                            'overflow-x': 'hidden',
+                            'overflow-y': 'auto',
+                            'top': winScrollTop + 'px'
+                        });
+                    } else if(($menuOffset.top < winScrollTop) || ($menuOffset.top + menuHeight > winScrollTop + winHeight)){
+                        $menu.css({
                         'top': winScrollTop + 'px'
-                    });
-                } else if(($menuOffset.top < winScrollTop) || ($menuOffset.top + menuHeight > winScrollTop + winHeight)){
-                    $menu.css({
-                        'top': winScrollTop + 'px'
-                    });
-                }
+                        });
+                    } 
+                });
+                
             }
         };
 
