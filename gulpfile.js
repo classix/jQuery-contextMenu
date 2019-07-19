@@ -68,21 +68,9 @@ gulp.task('jshint', function (cb) {
   ],cb);
 });
 
-gulp.task('jscs', function (cb) {
-    // Broken in new release...
-    return;
-    pump([
-        gulp.src(scripts.src),
-        plugins.jscs(),
-        plugins.jscs.reporter(),
-        plugins.jscs.reporter('fail')
-    ], cb);
-});
-
-gulp.task('js', ['jshint', 'jscs', 'jslibs', 'jsdist']);
 
 gulp.task('jsdist', function (cb) {
-    pump([
+    return pump([
         gulp.src(scripts.src),
         plugins.sourcemaps.init(),
         plugins.replace(replacement.regexp, replacement.filter),
@@ -96,7 +84,7 @@ gulp.task('jsdist', function (cb) {
 
 
 gulp.task('jslibs', function (cb){
-    pump([
+    return pump([
         gulp.src(scripts.libs),
         plugins.rename({prefix: 'jquery.ui.'}),
         gulp.dest('src'),
@@ -143,7 +131,7 @@ gulp.task('build-icons', function () {
     var iconfont = require('gulp-iconfont');
     var consolidate = require('gulp-consolidate');
 
-    gulp.src(icons.src)
+    return gulp.src(icons.src)
         .pipe(iconfont({
             fontName: 'context-menu-icons',
             fontHeight: 1024,
@@ -187,12 +175,13 @@ gulp.task('integration-test-paths', function(){
     pipe(gulp.dest('test/integration/html/'));
 });
 
+gulp.task('js', gulp.series('jshint', /*'jslibs',*/ 'jsdist'));
 
-gulp.task('watch', ['js', 'css'], function () {
-    gulp.watch(scripts.src, ['js']);
-    gulp.watch(styles.all, ['css']);
-});
+gulp.task('watch', gulp.series(gulp.parallel('js', 'css'), function () {
+  gulp.watch(scripts.src, ['js']);
+  gulp.watch(styles.all, ['css']);
+}));
 
-gulp.task('build', ['build-icons', 'css', 'js', 'integration-test-paths']);
+gulp.task('build', gulp.series('build-icons', 'css', 'js', 'integration-test-paths'));
 
-gulp.task('default', ['watch']);
+gulp.task('default', gulp.series('watch'));
